@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="get:\cases\(nationalID):covid-papi-config" doc:id="c7e78ed0-b1c0-4235-9d8a-aaf3cf46af13" >
+		<set-variable value="#[attributes.headers.'x-correlation-id' default &quot;&quot;]" doc:name="Set correlationId" doc:id="d7b458f7-2fc0-4c59-8571-55df3a40e569" variableName="correlationId" />
+		<logger level="INFO" doc:name="Start Log" doc:id="47fbb5b5-4e1b-46e7-8a1b-bd51be2cebe8" message="transactionID: #[vars.transactionId]], correlationID: #[vars.correlationID], message: Started register covid case flow, payload: #[payload]" />
+		<ee:transform doc:name="Create Variables" doc:id="373d15e7-2149-44f3-a8b0-c32beef0c947" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="uhubHeaderParameters" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"client_id": Mule::p('ehub.sapi.client_id'),
+	"client_secret": Mule::p('ehub.sapi.client_secret'),
+	"x-transaction-id": vars.transactionId,
+	"x-correlation-id": vars.correlationId
+}]]></ee:set-variable>
+				<ee:set-variable variableName="covidCasePayload" ><![CDATA[{
+	nationalID: attributes.uriParams.nationalID
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="check-case-exist" doc:id="fbade97d-d1ee-4882-b7db-3de3f1fa6519" name="check-case-exist" />
+		<ee:transform doc:name="Set Response" doc:id="a7806b8b-5912-4ef6-86c3-5f3cc2cd0820" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if(payload.code != 404) payload else {
+	code : 200,
+	message : "Case registration is in progress",
+	description: "Case registration is in progress, please reach out to support team in case the registration is taking more then 12 hours",
+	dateTime : now() as String { format: "yyyy-MM-dd'T'HH:mm:ss'Z'" },
+	transactionId : vars.transactionId
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

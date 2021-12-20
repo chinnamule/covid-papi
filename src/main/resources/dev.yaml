@@ -1,0 +1,33 @@
+http:
+  port: "8081"
+
+ehub.sapi:
+  host: "uho-dev-uhub-sapi.us-e2.cloudhub.io"
+  port: "80"
+  basepath: "covid/v1"
+  client_id: ""
+  client_secret: ""
+  subpath:
+    get.case: "cases"
+    register.case: "cases"
+    update.case: "cases"
+  
+aws.sapi:
+  host: "uho-dev-aws-sapi.us-e2.cloudhub.io"
+  port: "80"
+  basepath: "covid/v1"
+  client_id: ""
+  client_secret: ""
+  subpath: "document"
+  
+aws.s3:
+  bucket.name: "uho-covid-docs"
+  folder.path: "identity"
+ 
+who.sapi:
+  host: "uho-dev-who-sapi.us-e2.cloudhub.io"
+  port: "80"
+  basepath: "covid/v1"
+  client_id: ""
+  client_secret: ""
+  subpath: "case"   

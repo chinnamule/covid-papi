@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<sub-flow name="report-case-to-who-request" doc:id="68e471bc-f6e9-4ba3-be31-c2f0ae8cee6e" >
+		<logger level="DEBUG" doc:name="Before Backend Call" doc:id="1534e02d-8af9-4517-94e8-00ea1225981a" message='transactionID: #[vars.transactionId]], correlationID: #[vars.correlationID], message: "Before report case to who service call", payload: #[payload]' />
+		<http:request method="POST" doc:name="Call Report Case To WHO Service" doc:id="a9093685-f82c-48dc-b512-2aac44409861" config-ref="HTTP_WHO_Request_configuration" path="/${secure::who.sapi.subpath}">
+			<http:headers><![CDATA[#[vars.whoHeaderParameters]]]></http:headers>
+		</http:request>
+		<logger level="DEBUG" doc:name="After Backend Call" doc:id="7273a341-a0b7-4f84-94c9-03dbc46b7397" message='transactionID: #[vars.transactionId]], correlationID: #[vars.correlationID], message: "After update case uhub sapi service call", payload: #[payload]' />
+	</sub-flow>
+	<sub-flow name="update-covid-case-service-request" doc:id="61f5f2a1-14dc-418c-bf08-5ace1cb7449f" >
+		<logger level="DEBUG" doc:name="Before Backend Call" doc:id="40b4149e-4277-40fc-94a3-f5e3ceb8be8b" message='transactionID: #[vars.transactionId]], correlationID: #[vars.correlationID], message: "Before update case uhub sapi service call", payload: #[payload]' />
+		<http:request method="PUT" doc:name="Update Covid Case " doc:id="8ef2d136-a47d-4a38-a50f-9ec919276104" config-ref="HTTP_UHUB_SAPI_Request_configuration" path="/${secure::ehub.sapi.subpath.update.case}">
+							<http:headers><![CDATA[#[vars.uhubHeaderParameters]]]></http:headers>
+						</http:request>
+		<logger level="DEBUG" doc:name="After Backend Call" doc:id="94e7242c-fd40-4dfb-971d-aa996f5e3612" message='transactionID: #[vars.transactionId]], correlationID: #[vars.correlationID], message: "After report case to who service call", payload: #[payload]' />
+	</sub-flow>
+	<sub-flow name="post-covid-case-service-request" doc:id="12343dae-90cd-4952-b68f-ba502d7fb54e" >
+		<logger level="DEBUG" doc:name="Before Backend Call" doc:id="2a84da65-40f1-44c5-9131-138a0f4d4d01" message='transactionID: #[vars.transactionId]], correlationID: #[vars.correlationID], message: "Before add case uhub sapi service call", payload: #[payload]' />
+		<http:request method="POST" doc:name="Add Covid Case " doc:id="52b0c630-33cf-40fd-8203-3961a30a094c" config-ref="HTTP_UHUB_SAPI_Request_configuration" path="/${secure::ehub.sapi.subpath.register.case}">
+							<http:body><![CDATA[#[vars.covidCasePayload]]]></http:body>
+							<http:headers><![CDATA[#[vars.uhubHeaderParameters]]]></http:headers>
+						</http:request>
+		<logger level="DEBUG" doc:name="After Backend Call" doc:id="15cf6be4-0b85-4c79-a587-9685dadfb535" message='transactionID: #[vars.transactionId]], correlationID: #[vars.correlationID], message: "After add case uhub sapi service call", payload: #[payload]' />
+	</sub-flow>
+	<sub-flow name="get-covid-case-by-national-id" doc:id="1b0fd322-c4f2-4a06-87af-aee298269d2f" >
+		<logger level="DEBUG" doc:name="Before Backend Call" doc:id="912bec8e-3dbb-4965-bbec-ba0586d6fbbe" message='transactionID: #[vars.transactionId]], correlationID: #[vars.correlationID], message: "Before get case uhub sapi service call", payload: #[payload]' />
+		<http:request method="GET" doc:name="Get Covid Case By NationalID" doc:id="47e22801-5d3e-4526-bd0a-956731483829" config-ref="HTTP_UHUB_SAPI_Request_configuration" path="/${secure::ehub.sapi.subpath.get.case}/{nationalId}">
+			<http:headers><![CDATA[#[vars.uhubHeaderParameters]]]></http:headers>
+			<http:uri-params><![CDATA[#[{
+	"nationalId": vars.covidCasePayload.nationalID
+}]]]></http:uri-params>
+			<http:response-validator>
+				<http:success-status-code-validator values="200,404" />
+			</http:response-validator>
+		</http:request>
+		<logger level="DEBUG" doc:name="After Backend Call" doc:id="ecdda797-65e5-47c0-8e1b-f98ec9ce6069" message='transactionID: #[vars.transactionId]], correlationID: #[vars.correlationID], message: "After get case uhub sapi service call", payload: #[payload]' />
+	</sub-flow>
+	<sub-flow name="post-upload-document-service-request" doc:id="ae9d59be-4ef7-4f29-896b-1d842af54c5a" >
+		<logger level="DEBUG" doc:name="Before Backend Call" doc:id="74ead57b-5a32-463b-8bc2-97f8d7aac01d" message='transactionID: #[vars.transactionId]], correlationID: #[vars.correlationID], message: "Before upload document aws sapi service call", payload: #[payload]' />
+		<http:request method="POST" doc:name="Call Upload Document Service" doc:id="afb881eb-19a8-4874-8652-c62d39f31a68" config-ref="HTTP_AWS_SAPI_Request_configuration" path="/${secure::aws.sapi.subpath}">
+			<http:headers><![CDATA[#[vars.awsHeaderParameters]]]></http:headers>
+		</http:request>
+		<logger level="DEBUG" doc:name="After Backend Call" doc:id="c7aa5736-0426-4322-bfff-3be1aa354a13" message='transactionID: #[vars.transactionId]], correlationID: #[vars.correlationID], message: "After upload document aws sapi service call", payload: #[payload]' />
+	
+</sub-flow>
+</mule>

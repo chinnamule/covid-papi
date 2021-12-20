@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<http:listener-config name="covid-papi-httpListenerConfig" basePath="covid">
+        <http:listener-connection host="0.0.0.0" port="${http.port}" />
+    </http:listener-config>
+    <apikit:config name="covid-papi-config" api="covid-papi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="8a51007e-1d2b-4ce9-94b1-03ae40fd2935" file="${env}.yaml" key="${enc.key}" />
+	<http:request-config name="HTTP_UHUB_SAPI_Request_configuration" doc:name="HTTP Request configuration" doc:id="9295e8d3-1453-458a-bbd4-4fd9dc2c5d45" basePath="/${secure::ehub.sapi.basepath}" >
+		<http:request-connection host="${secure::ehub.sapi.host}" port="${secure::ehub.sapi.port}" />
+	</http:request-config>
+	<http:request-config name="HTTP_AWS_SAPI_Request_configuration" doc:name="HTTP Request configuration" doc:id="35ab1b26-b2b1-4135-9e25-ab98229303f7" basePath="/${secure::aws.sapi.basepath}">
+		<http:request-connection host="${secure::aws.sapi.host}" port="${secure::aws.sapi.port}" />
+	</http:request-config>
+	<http:request-config name="HTTP_WHO_Request_configuration" doc:name="HTTP Request configuration" doc:id="80aec699-9c3d-46e9-be9c-3d887b5327aa" basePath="/${secure::who.sapi.basepath}">
+		<http:request-connection host="${secure::who.sapi.host}" port="${secure::who.sapi.port}" />
+	</http:request-config>
+</mule>
